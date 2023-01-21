@@ -4,6 +4,8 @@ This repository contains the solution to given [problem](given%20problem.pdf) (i
 
 It was a part of Differential and Difference Equations Course at AGH UST 2022/2023.
 
+Report (in polish) can be found [here](MES_for_Gravitational_Potential.pdf)
+
 To run the [program](fem.jl) you need [Julia](https://julialang.org/downloads/) and Plots package you can download by running commented lines (2-3)
 
 ```
