@@ -13,9 +13,11 @@ using Pkg
 Pkg.add("Plots")
 ```
 You can run it in terminal
+
 ```
 $ julia fem.jl
 ```
+
 Or you can use code editor e.g. Visual Studio Code with Julia extension
 
 After running the code, you will be asked to pass the number of division points e.g. 10
