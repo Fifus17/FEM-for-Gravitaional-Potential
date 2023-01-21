@@ -21,9 +21,11 @@ $ julia fem.jl
 Or you can use code editor e.g. Visual Studio Code with Julia extension
 
 After running the code, you will be asked to pass the number of division points e.g. 10
+
 ```
 Enter the number of divisions: 10
 ```
+
 After the necessary calculations, program will display a plot of the function Φ(x)
 
 ![Plot](screenshots/FEM%201.png)
