@@ -1,9 +1,14 @@
+# FOR INSTALLING PLOTS PACKAGE FOR VISUALIZATION
+# using Pkg
+# Pkg.add("Plots")
+
 using Plots
 
 # CONSTANT VALUES
 
 # constant G
-const G = 6.67408e-11
+# const G = 6.67408e-11
+const G = 20 # for testing
 # domain of the problem
 const range = [0, 3]
 # input of parameter for the number of divisions !!!
@@ -24,23 +29,27 @@ const x4 = -sqrt((3/7)+(2/7)*sqrt(6/5))
 
 # function rho based on the given data in the problem
 function rho(x::Number)
-    if x > 1 && x < 2
+    if x > 1 && x <= 2
         return 1
     else
         return 0
     end
 end
 
-# Auxiliary function to calculate the new x for the Gauss Legendre Quadrature (GLQ) - 4 points formula
+# Auxiliary function to calculate the new x for 
+# the Gauss Legendre Quadrature (GLQ) - 4 points formula
 function calculateNewX(x::Number, r1::Number, r2::Number)
     return (r2 - r1)/2 * x + (r1 + r2)/2
 end
 
 
 # Numerical Integration Gauss Legendre Quadrature (GLQ) - 4 points formula
-function integral(f, r1::Number, r2::Number) # f is the function, r1 and r2 are the limits of integration
+function integral(f, r1::Number, r2::Number) 
+    # f is the function, r1 and r2 are the limits of integration
     # return the result of the integration
-    return (r2 - r1)/2 * (w1*f(calculateNewX(x12, r1, r2)) + w1*f(calculateNewX(x12, r1, r2)) + w2*f(calculateNewX(x3, r1, r2)) + w2*f(calculateNewX(x4, r1, r2)))
+    return ((r2 - r1)/2 * 
+    (w1*f(calculateNewX(x12, r1, r2)) + w1*f(calculateNewX(x12, r1, r2)) 
+    + w2*f(calculateNewX(x3, r1, r2)) + w2*f(calculateNewX(x4, r1, r2))))
 end
 
 function e_i(i::Int64)
@@ -76,7 +85,7 @@ function FEM(n)
 
     # Filling diagonal
     f1(x) = e_i_prime(1)(x) * e_i_prime(1)(x)
-    tmp = -integral(f1, h*0, h*2)
+    tmp = integral(f1, h*0, h*2)
     for i in 1:n-1
         A[i, i] = -tmp
     end
@@ -90,27 +99,43 @@ function FEM(n)
 
     # Filling the vector b
     for i in 1:n-1
-        f3(x) = e_i_prime(i)(x)*rho(x)
+        f3(x) = e_i(i)(x) * rho(x)
         f4(x) = -(1/3) * e_i_prime(i)(x)
-        b[i] = 4*pi*G*(integral(f3, h*(i-1), h*i) + integral(f3, h*i, h*(i+1))) + integral(f4, h*(i-1), h*(i)) + integral(f4, h*i, h*(i+1))
+        b[i] = 4*pi*G*(integral(f3, h*(i-1), h*i) + integral(f3, h*i, h*(i+1)))
+        + integral(f4, h*(i-1), h*i) + integral(f4, h*i, h*(i+1))
     end
 
     # Solving the system
-    x = A\b
+    B = A\b
 
-    # Plotting the solution
-
-    # Returning the solution
-    return function(x)
+    # Function for the solution
+    function solutionf(x)
         solution = 5 - (x/3)
         for i = 1:n-1
             solution += B[i]*e_i(i)(x)
         end
         return solution  
     end
+
+    # Plotting the solution
+    X = [h*i for i in 0:n]
+    Y = zeros(Float64, n+1)
+    Y[1] = 5
+    Y[n+1] = 4
+    for i in 2:n
+        Y[i] = solutionf(h*(i-1))
+    end
+
+    solutionPlot = plot(X, Y, label="Solution", 
+    title="FEM Solution", xlabel="x", ylabel="Φ(x)", 
+    markershape = :auto, markersize = 3, legend=:topright)
+    display(solutionPlot)
+
 end
 
 # Running the code
 FEM(n)
-# f(x) = e_i_prime(1)(1.5)
-# f(2)
+
+# So the user can see the plot
+print("Press enter to exit")
+readline()
