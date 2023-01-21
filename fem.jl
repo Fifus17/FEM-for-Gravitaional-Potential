@@ -7,9 +7,10 @@ const G = 6.67408e-11
 # domain of the problem
 const range = [0, 3]
 # input of parameter for the number of divisions !!!
+print("Enter the number of divisions: ")
 const n = parse(Int64, readline()) # input 
 # distance between each division
-const h = (range[1] - range[0])/n
+const h = (range[2] - range[1])/n
 # weights 1 and 2 for the Gauss Legendre Quadrature (GLQ) - 4 points formula
 const w1 = (18 + sqrt(30))/36
 # weights 3 and 4 for the Gauss Legendre Quadrature (GLQ) - 4 points formula
@@ -39,7 +40,7 @@ end
 # Numerical Integration Gauss Legendre Quadrature (GLQ) - 4 points formula
 function integral(f, r1::Number, r2::Number) # f is the function, r1 and r2 are the limits of integration
     # return the result of the integration
-    return (r2 - r1)/2 * (w1*f(calculateNewX(x1, r1, r2)) + w1*f(calculateNewX(x2, r1, r2)) + w2*f(calculateNewX(x3, r1, r2)) + w2*f(calculateNewX(x4, r1, r2)))
+    return (r2 - r1)/2 * (w1*f(calculateNewX(x12, r1, r2)) + w1*f(calculateNewX(x12, r1, r2)) + w2*f(calculateNewX(x3, r1, r2)) + w2*f(calculateNewX(x4, r1, r2)))
 end
 
 function e_i(i::Int64)
@@ -74,24 +75,24 @@ function FEM(n)
     # Filling the matrix A
 
     # Filling diagonal
-    f(x) = e_i_prime(1)(x)^2
-    tmp = -integral(f, h*0, h*2)
+    f1(x) = e_i_prime(1)(x) * e_i_prime(1)(x)
+    tmp = -integral(f1, h*0, h*2)
     for i in 1:n-1
         A[i, i] = -tmp
     end
     # Filling symetrical triangles
     for i in 1:n-2
-        f(x) = e_i_prime(i)(x)*e_i_prime(i+1)(x)
-        tmp = -integral(f, h*i, h*(i+1))
+        f2(x) = e_i_prime(i)(x)*e_i_prime(i+1)(x)
+        tmp = -integral(f2, h*i, h*(i+1))
         A[i, i+1] = tmp
         A[i+1, i] = tmp
     end
 
     # Filling the vector b
     for i in 1:n-1
-        f1(x) = e_i_prime(i)(x)*rho(x)
-        f2(x) = -(1/3) * e_i_prime(i)(x)
-        b[i] = 4*pi*G*(integral(f1, h*(i-1), h*i) + integral(f1, h*i, h*(i+1))) + integral(f2, h*(i-1), h*(i)) + integral(f2, h*i, h*(i+1))
+        f3(x) = e_i_prime(i)(x)*rho(x)
+        f4(x) = -(1/3) * e_i_prime(i)(x)
+        b[i] = 4*pi*G*(integral(f3, h*(i-1), h*i) + integral(f3, h*i, h*(i+1))) + integral(f4, h*(i-1), h*(i)) + integral(f4, h*i, h*(i+1))
     end
 
     # Solving the system
@@ -108,3 +109,8 @@ function FEM(n)
         return solution  
     end
 end
+
+# Running the code
+FEM(n)
+# f(x) = e_i_prime(1)(1.5)
+# f(2)
