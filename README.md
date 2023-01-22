@@ -30,4 +30,4 @@ After the necessary calculations, program will display a plot of the function Φ
 
 ![Plot](screenshots/FEM%201.png)
 
-To exit the program press any key
+Press any key to exit the program
